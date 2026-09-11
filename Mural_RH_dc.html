@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  body { margin: 0; background: #fafaf8; font-family: 'Manrope', sans-serif; color: #16181a; }
+  a { color: #16305c; text-decoration: none; }
+  a:hover { color: #1f9c4f; }
+  * { box-sizing: border-box; }
+</style>
+</helmet>
+
+<header style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-bottom:1px solid #ececea">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="uploads/LOGO_MTA_ALTA_QUALIDADE%20(6).png" alt="MTA" style="height:26px;width:auto;object-fit:contain" />
+      <span style="width:1px;height:20px;background:#e2ded2"></span>
+      <span style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;color:#16181a">Blog RH</span>
+    </div>
+    <nav style="display:flex;align-items:center;gap:22px">
+      <span style="font-size:14px;font-weight:700;color:#16181a;position:relative;padding-bottom:2px;border-bottom:2px solid #1f9c4f">Feed</span>
+      <a href="Blog RH - Login.dc.html" style="font-size:13.5px;font-weight:700;background:#16305c;color:#fff;padding:9px 16px;border-radius:8px" style-hover="background:#0f2447">Login RH</a>
+    </nav>
+  </div>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 24px 80px">
+
+  <nav style="display:flex;gap:10px;flex-wrap:wrap;padding:26px 0 28px">
+    <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
+      <button onClick="{{ f.onClick }}" style="{{ f.style }}" style-hover="{{ f.hoverStyle }}">{{ f.label }}</button>
+    </sc-for>
+  </nav>
+
+  <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#a5a9ab;margin-top:32px">Destaque</div>
+  <section aria-label="Post em destaque" style="margin-top:12px;display:grid;grid-template-columns:{{ heroColumns }};gap:20px;align-items:stretch">
+    <a href="{{ featured.href }}" style="position:relative;padding:32px 36px 32px 40px;display:flex;flex-direction:column;gap:14px;justify-content:center;background:#fff;border:1px solid #ececea;border-radius:16px;box-shadow:0 1px 3px rgba(20,25,30,0.04);color:inherit;overflow:hidden" style-hover="box-shadow:0 8px 22px rgba(20,25,30,0.1)">
+      <span style="position:absolute;left:0;top:0;bottom:0;width:5px;background:{{ featured.accentColor }}"></span>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:{{ featured.accentColor }};background:{{ featured.accentTint }};padding:4px 10px;border-radius:6px">{{ featured.category }}</span>
+      </div>
+      <h2 style="font-family:Sora,sans-serif;font-size:clamp(24px,3vw,32px);line-height:1.18;margin:0;color:#16181a">{{ featured.title }}</h2>
+      <ul style="margin:4px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ featured.highlights }}" as="h" hint-placeholder-count="2">
+          <li style="font-size:14.5px;line-height:1.5;color:#4b4f52;padding-left:16px;position:relative">
+            <span style="position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:#a5a9ab"></span>
+            {{ h }}
+          </li>
+        </sc-for>
+      </ul>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+        <sc-if value="{{ hasFeaturedLogo }}" hint-placeholder-val="{{ false }}">
+          <img src="{{ featured.logo }}" alt="{{ featured.company }}" style="height:18px;width:auto;object-fit:contain" />
+        </sc-if>
+        <span style="font-size:12.5px;color:#a5a9ab">{{ featured.date }}</span>
+      </div>
+    </a>
+    <sc-if value="{{ hasSpotlights }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <sc-for list="{{ spotlights }}" as="sp" hint-placeholder-count="2">
+        <a href="{{ sp.href }}" style="position:relative;border-radius:16px;overflow:hidden;flex:1;min-height:170px;background:{{ sp.cardBg }};display:block;color:inherit">
+          <sc-if value="{{ sp.hasImage }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ sp.image }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{ sp.imageFit }}" />
+          </sc-if>
+          <sc-if value="{{ sp.hasNoImage }}" hint-placeholder-val="{{ true }}">
+            <image-slot id="{{ sp.imgId }}" shape="rect" placeholder="Foto do post" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          </sc-if>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,15,10,0) 55%,rgba(8,12,10,0.85) 100%);pointer-events:none"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#fff">
+            <span style="font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#fff;background:{{ sp.accentColor }};padding:3px 9px;border-radius:6px;width:fit-content">{{ sp.category }}</span>
+            <span style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;line-height:1.3">{{ sp.title }}</span>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+    </sc-if>
+  </section>
+
+  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:48px">
+    <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#a5a9ab">Mais recentes</div>
+    <span style="font-size:12.5px;color:#c2c0b6">{{ resultsCount }}</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;margin-top:16px">
+    <sc-for list="{{ posts }}" as="post" hint-placeholder-count="5">
+      <a href="{{ post.href }}" style="display:flex;flex-direction:column;gap:14px;cursor:pointer;padding:14px;border-radius:16px;background:#fff;border:1px solid #ececea;transition:box-shadow .15s,transform .15s,border-color .15s;color:inherit" style-hover="box-shadow:0 10px 24px rgba(20,25,30,0.09);transform:translateY(-3px);border-color:#e2ded2">
+        <div style="border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative">
+          <sc-if value="{{ post.hasImage }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ post.image }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
+          </sc-if>
+          <sc-if value="{{ post.hasNoImage }}" hint-placeholder-val="{{ true }}">
+            <image-slot id="{{ post.imgId }}" shape="rect" placeholder="Foto do post" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:{{ post.accentColor }};background:{{ post.accentTint }};padding:3px 9px;border-radius:6px;width:fit-content">{{ post.category }}</span>
+          <h3 style="font-family:Sora,sans-serif;font-size:17.5px;line-height:1.35;margin:0;color:#16181a">{{ post.title }}</h3>
+          <p style="margin:0;font-size:13.5px;line-height:1.55;color:#6b7075;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ post.excerpt }}</p>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:6px">
+            <sc-if value="{{ post.hasLogo }}" hint-placeholder-val="{{ false }}">
+              <img src="{{ post.logo }}" alt="{{ post.company }}" style="height:14px;width:auto;object-fit:contain;opacity:.85" />
+            </sc-if>
+            <span style="font-size:12px;color:#a5a9ab">{{ post.date }}</span>
+          </div>
+        </div>
+      </a>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center;padding:60px 0;color:#a5a9ab;font-size:14px">Nenhum post nessa categoria por enquanto.</div>
+  </sc-if>
+
+  <footer style="margin-top:64px;padding:28px 32px;border-radius:16px;background:#fff;border:1px solid #ececea;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;opacity:.65">
+      <img src="uploads/LOGO_MTA_ALTA_QUALIDADE%20(6).png" alt="MTA" style="height:16px;width:auto;object-fit:contain" />
+      <img src="uploads/LOGO%20MONTE.png" alt="Monte" style="height:22px;width:auto;object-fit:contain" />
+      <img src="uploads/LOGO%20TROPICAL%2002.png" alt="Tropical Center" style="height:18px;width:auto;object-fit:contain" />
+      <img src="uploads/MODELO_1.png" alt="Posto Monte" style="height:18px;width:auto;object-fit:contain" />
+    </div>
+    <span style="font-size:12.5px;color:#a5a9ab">© Grupo Monte MTA · comunicação interna</span>
+  </footer>
+
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MONTE = "uploads/LOGO%20MONTE.png";
+const TROPICAL = "uploads/LOGO%20TROPICAL%2002.png";
+const MTA = "uploads/LOGO_MTA_ALTA_QUALIDADE%20(6).png";
+const POSTO = "uploads/MODELO_1.png";
+const STORAGE_KEY = "blogrh_custom_posts_v1";
+const SUPABASE_URL = "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE";
+const SUPABASE_ANON_KEY = "COLE_AQUI_A_ANON_KEY_DO_SEU_PROJETO_SUPABASE";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const COMPANY_LOGO = { "Monte": MONTE, "Tropical Center": TROPICAL, "MTA": MTA, "Posto Monte": POSTO };
+
+const CATS = {
+  "Eventos": "#d97a1f",
+  "Comunicados": "#c23b3b",
+  "Treinamentos": "#2a5fa8",
+  "Recomendações": "#1f9c4f"
+};
+const CAT_TINTS = {
+  "Eventos": "#fbf0e3",
+  "Comunicados": "#fbeaea",
+  "Treinamentos": "#e9eff8",
+  "Recomendações": "#e8f6ee"
+};
+function accentColor(cat) { return CATS[cat] || CATS["Comunicados"]; }
+function accentTint(cat) { return CAT_TINTS[cat] || CAT_TINTS["Comunicados"]; }
+
+const SEED_POSTS = [
+  { id: "f1", company: "MTA", logo: MTA, category: "Eventos", date: "18 set · 15h", title: "Festa de fim de ano do Grupo Monte já tem data marcada", excerpt: "Confirmado: nossa confraternização será no dia 12 de dezembro, na unidade MTA, com show do músico Willy Lima.", highlights: ["Confirmado para 12 de dezembro, na unidade MTA", "Show ao vivo do músico Willy Lima"], featured: true },
+  { id: "p1", company: "Monte", logo: MONTE, category: "Comunicados", date: "10 set", image: "assets/clock-sample.jpg", imageFitContain: true, title: "Novo horário de atendimento do RH", excerpt: "A partir de outubro, o RH passa a atender das 8h às 17h, sem fechar ao meio-dia. Dúvidas, procure sua unidade." },
+  { id: "p2", company: "MTA", logo: MTA, category: "Treinamentos", date: "08 set", title: "Treinamento de segurança no trabalho abre novas turmas", excerpt: "Vagas abertas para o curso obrigatório de NR-12 na unidade MTA. Inscrição direto com seu supervisor até dia 20." },
+  { id: "p3", company: "Tropical Center", logo: TROPICAL, category: "Recomendações", date: "05 set", title: "Equipe de vendas do Tropical Center bate meta do trimestre", excerpt: "Parabéns a todo o time! O resultado veio 14% acima do previsto — comemoração marcada para a próxima reunião geral." },
+  { id: "p4", company: "Posto Monte", logo: POSTO, category: "Eventos", date: "02 set", title: "Semana da saúde: vacinação e aferição de pressão no local", excerpt: "Equipe médica parceira estará disponível em todas as unidades entre os dias 22 e 26 de setembro." },
+  { id: "p5", company: "MTA", logo: MTA, category: "Comunicados", date: "29 ago", title: "Atualização no plano de benefícios", excerpt: "A partir de outubro o vale-alimentação passa a ser cadastrado no novo aplicativo. Instruções chegam por e-mail." }
+];
+
+class Component extends DCLogic {
+  state = { filter: "Todos", customPosts: [] };
+
+  componentDidMount() {
+    this.loadCustom();
+    this._onFocus = () => this.loadCustom();
+    window.addEventListener("focus", this._onFocus);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("focus", this._onFocus);
+  }
+  async loadCustom() {
+    const { data, error } = await supabaseClient
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        this.setState({ customPosts: Array.isArray(parsed) ? parsed : [] });
+      } catch (e) {}
+      return;
+    }
+
+    const mapped = (data || []).map((row) => ({
+      ...row,
+      imageFitContain: row.image_fit_contain,
+      highlights: row.highlights || []
+    }));
+    this.setState({ customPosts: mapped });
+  }
+
+  renderVals() {
+    const filterLabels = ["Todos", "Eventos", "Comunicados", "Treinamentos", "Recomendações"];
+    const active = this.state.filter;
+
+    const filters = filterLabels.map((label) => {
+      const isActive = label === active;
+      const color = label === "Todos" ? "#16305c" : accentColor(label);
+      return {
+        label,
+        onClick: () => this.setState({ filter: label }),
+        style: `padding:7px 16px;border-radius:999px;border:1.5px solid ${isActive ? color : "#e2ded2"};background:${isActive ? color : "#fff"};font-size:13.5px;font-weight:700;color:${isActive ? "#fff" : "#6b7075"};cursor:pointer`,
+        hoverStyle: isActive ? "" : `border-color:${color};color:${color}`
+      };
+    });
+
+    const custom = (this.state.customPosts || []).map((p) => ({ ...p, logo: COMPANY_LOGO[p.company] || "" }));
+    const pinnedCustom = custom.find((p) => p.pinned);
+    const featuredRaw = pinnedCustom || SEED_POSTS.find((p) => p.featured);
+    const featured = {
+      ...featuredRaw,
+      logo: featuredRaw.logo || "",
+      image: featuredRaw.image || "",
+      highlights: featuredRaw.highlights || [featuredRaw.excerpt],
+      accentColor: accentColor(featuredRaw.category),
+      accentTint: accentTint(featuredRaw.category),
+      href: "Artigo.dc.html?id=" + encodeURIComponent(featuredRaw.id)
+    };
+    const hasFeaturedLogo = !!featured.logo;
+
+    const seedRest = SEED_POSTS.filter((p) => !p.featured);
+    const customRest = custom.filter((p) => !pinnedCustom || p.id !== pinnedCustom.id);
+    const combined = [...customRest, ...seedRest];
+
+    const spotlights = combined.slice(0, 2).map((p) => ({
+      ...p,
+      image: p.image || "",
+      hasImage: !!p.image,
+      hasNoImage: !p.image,
+      imgId: "spot-img-" + p.id,
+      imageFit: p.imageFitContain ? "contain" : "cover",
+      cardBg: p.imageFitContain ? "#eef2f6" : "transparent",
+      accentColor: accentColor(p.category),
+      href: "Artigo.dc.html?id=" + encodeURIComponent(p.id)
+    }));
+    const gridSource = combined.slice(2);
+    const filtered = active === "Todos" ? gridSource : gridSource.filter((p) => p.category === active);
+
+    const posts = filtered.map((p) => ({
+      ...p,
+      logo: p.logo || "",
+      image: p.image || "",
+      imgId: "post-img-" + p.id,
+      hasNoImage: !p.image,
+      hasImage: !!p.image,
+      hasLogo: !!p.logo,
+      accentColor: accentColor(p.category),
+      accentTint: accentTint(p.category),
+      href: "Artigo.dc.html?id=" + encodeURIComponent(p.id)
+    }));
+
+    return {
+      filters,
+      featured,
+      hasFeaturedLogo,
+      spotlights,
+      hasSpotlights: spotlights.length > 0,
+      heroColumns: spotlights.length > 0 ? "1.15fr 1fr" : "1fr",
+      posts,
+      resultsCount: posts.length + (posts.length === 1 ? " post" : " posts"),
+      noResults: filtered.length === 0
+    };
+  }
+}
+
+</script>
+</body>
+</html>
